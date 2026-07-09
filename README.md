@@ -1,30 +1,12 @@
 # x402-Cosmos Extension
 
-**HTTP 402 Payment-Gated Routing on Cosmos (IBC + CosmWasm)**
+**HTTP 402 Payment-Gated Routing on Cosmos**
+
 **Author:** Richard Patterson (@De-ASI-INTERFACE)
 **Version:** 1.0.0 | **Date:** 2026-07-09 | **License:** MIT
 
----
-
 ## Overview
 
-Canonical specification for HTTP 402 Payment-Gated Routing on Cosmos, leveraging IBC (Inter-Blockchain Communication) for cross-chain payment routing, CosmWasm smart contracts for on-chain payment verification, and Tendermint BFT for instant finality. Originated and authored by Richard Patterson.
+The x402-Cosmos Extension adapts the x402 HTTP 402 payment standard to the Cosmos ecosystem via IBC (Inter-Blockchain Communication), CosmWasm smart contracts, and ADR-036 arbitrary message signing. It defines `scheme: cosmos-ibc` for cross-chain IBC token transfers and `scheme: cosmos-cw20` for CosmWasm CW-20 token payments, with Osmosis as the canonical AMM routing surface. Lean 4 formal proofs verify payment integrity, IBC packet replay prevention, and timeout invariants.
 
-The x402-Cosmos Extension is architecturally distinct from EVM-based extensions. Payment proofs use ADR-036 off-chain message signing (Cosmos amino/protobuf), tokens are ICS-20 standard, and finality is deterministic (not probabilistic) — a single Tendermint block with 2/3 validator pre-commits is final with no reorgs.
-
-## Architecture
-
-- **Payment Token:** ICS-20 fungible token (ATOM, USDC via Noble, or chain-native)
-- **Signature Scheme:** ADR-036 (amino sign doc) or direct Protobuf signing with secp256k1/ed25519
-- **Finality Model:** Tendermint BFT instant finality (~6s per block, no reorgs)
-- **Verifier Surface:** CosmWasm contract `execute::VerifyPayment { proof, sig }` on any IBC-connected chain
-- **IBC Extension:** ICS-20 token transfer as payment with IBC packet acknowledgement as proof
-- **Formal Verification:** Lean 4 Tendermint BFT 2/3 quorum finality theorem
-
-## Citation
-```bibtex
-@software{patterson2026x402cosmos,
-  author={Patterson, Richard}, title={{x402-Cosmos: HTTP 402 Payment-Gated Routing on Cosmos}},
-  version={1.0.0}, date={2026-07-09},
-  url={https://github.com/De-ASI-INTERFACE/x402-cosmos-extension}, license={MIT}}
-```
+**Reference ID:** RP-DEASI-COS-2026-0709-001
