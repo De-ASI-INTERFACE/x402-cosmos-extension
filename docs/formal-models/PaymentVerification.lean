@@ -1,39 +1,13 @@
--- x402-Cosmos Payment Verification Formal Model
--- Author: Richard Patterson (@De-ASI-INTERFACE)
--- Date: 2026-07-09
+-- x402-Cosmos Payment Verification | Author: Richard Patterson
+import X402Cosmos.Basic
 
-import Mathlib.Data.Finset.Basic
+namespace X402Cosmos.Verification
 
-namespace X402Cosmos
+def settle (a : PaymentAuth) (s : AccountState) (h : verify a s) : AccountState :=
+  { s with current_sequence := s.current_sequence + 1 }
 
-structure IBCPacket where
-  source_chain    : Nat
-  dest_chain      : Nat
-  sequence        : Nat
-  timeout_ns      : Nat
-  deriving Repr
+theorem settled_sequence_incremented (a : PaymentAuth) (s : AccountState) (h : verify a s)
+    : (settle a s h).current_sequence = s.current_sequence + 1 := by
+  simp [settle]
 
-structure CW20Payment where
-  nonce      : String
-  amount     : Nat
-  expires_at : Nat
-  deriving Repr
-
-structure FacilitatorState where
-  settled_packets : Finset (Nat × Nat × Nat)
-  used_nonces     : Finset String
-  block_time_ns   : Nat
-  deriving Repr
-
-def ibc_verify (p : IBCPacket) (s : FacilitatorState) : Prop :=
-  (p.source_chain, p.dest_chain, p.sequence) ∉ s.settled_packets ∧
-  s.block_time_ns < p.timeout_ns
-
-def cw20_verify (p : CW20Payment) (s : FacilitatorState) : Prop :=
-  p.nonce ∉ s.used_nonces ∧ s.block_time_ns ≤ p.expires_at
-
-theorem ibc_packet_unique (p : IBCPacket) (s : FacilitatorState)
-    (h : ibc_verify p s) :
-    (p.source_chain, p.dest_chain, p.sequence) ∉ s.settled_packets := h.1
-
-end X402Cosmos
+end X402Cosmos.Verification
